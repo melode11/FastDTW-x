@@ -9,9 +9,17 @@
 #include "ColMajorCell.h"
 FD_NS_START
 
+ColMajorCell::ColMajorCell():_col(0),_row(0)
+{
+}
+
 ColMajorCell::ColMajorCell(JInt col, JInt row):_col(col),_row(row)
 {
     
+}
+
+ColMajorCell::ColMajorCell(const ColMajorCell& cell):_col(cell._col),_row(cell._row)
+{
 }
 
 JInt ColMajorCell::getCol() const

@@ -19,7 +19,11 @@ class ColMajorCell
     JInt _row;
     
 public:
+    ColMajorCell();
+    
     ColMajorCell(JInt col, JInt row);
+    
+    ColMajorCell(const ColMajorCell& cell);
     
     JInt getCol() const;
     

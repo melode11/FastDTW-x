@@ -26,11 +26,13 @@ class SearchWindowIterator
     JInt _expectedModCount;
     
 protected:
-    SearchWindowIterator(SearchWindow* w);
+    SearchWindowIterator(const SearchWindow* w);
     ~SearchWindowIterator();
 public:
     JBool hasNext();
     ColMajorCell next();
+    
+    friend class SearchWindow;
 };
 
 using namespace std;
@@ -65,6 +67,8 @@ public:
     JInt size() const;
     
     JInt getModCount() const;
+    
+    SearchWindowIterator iterator() const;
     
 protected:
     void expandWindow(JInt radius);

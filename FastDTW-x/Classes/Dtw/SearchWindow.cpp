@@ -8,10 +8,16 @@
 
 #include "SearchWindow.h"
 #include "Assert.h"
+#include "Math.h"
 
 FD_NS_START
 
-SearchWindowIterator::SearchWindowIterator(SearchWindow* w):_window(w),_hasMoreElements(w->size()>0),_currentI(w->minI()),_currentJ(w->minJ())
+SearchWindowIterator::SearchWindowIterator(const SearchWindow* w):_window(w),_hasMoreElements(w->size()>0),_currentI(w->minI()),_currentJ(w->minJ())
+{
+    
+}
+
+SearchWindowIterator::~SearchWindowIterator()
 {
     
 }
@@ -42,7 +48,7 @@ ColMajorCell SearchWindowIterator::next()
 SearchWindow::SearchWindow(JInt tsIsize, JInt tsJsize):_minValues(tsIsize),_maxValues(tsIsize),_maxJ(tsJsize -1),_size(0),_modCount(0)
 {
     fill(_minValues.begin(), _minValues.end(), -1);
-    fill(_maxValues.begin(), _maxValues.end(), 0);
+//    fill(_maxValues.begin(), _maxValues.end(), 0);
 }
 
 SearchWindow::~SearchWindow()
@@ -95,14 +101,138 @@ JInt SearchWindow::getModCount() const
     return _modCount;
 }
 
+SearchWindowIterator SearchWindow::iterator() const
+{
+    return SearchWindowIterator(this);
+}
+
 void SearchWindow::expandSearchWindow(JInt radius)
 {
+    if (radius >0) {
+        // Add all cells in the current Window to an array, iterating through the window and expanding the window
+        //    at the same time is not possible because the window can't be changed during iteration through the cells.
+        vector<ColMajorCell> windowCells;
+        windowCells.reserve(size());
+        SearchWindowIterator it = iterator();
+        for (; it.hasNext();) {
+            windowCells.push_back(it.next());
+        }
+        for (JInt cell = 0; cell<windowCells.size(); ++cell) {
+            ColMajorCell currentCell = windowCells[cell];
+            if (currentCell.getCol()!=minI() && currentCell.getRow()!=maxJ()) {// move to upper left if possible
+                // Either extend full search radius or some fraction until edges of matrix are met.
+                JInt targetCol = currentCell.getCol() - radius;
+                JInt targetRow = currentCell.getRow() + radius;
+                if (targetCol>=minI()&&targetRow<=maxJ()) {
+                    markVisited(targetCol, targetRow);
+                }
+                else
+                {
+                    JInt cellsPastEdge = max(minI() - targetCol, targetRow - maxJ());
+                    markVisited(targetCol+cellsPastEdge, targetRow - cellsPastEdge);
+                }
+            }
+            
+            if (currentCell.getRow() != maxJ()) {// move up if possible
+                JInt targetCol = currentCell.getCol();
+                JInt targetRow = currentCell.getRow()+radius;
+                if (targetRow <= maxJ()) {
+                    markVisited(targetCol, targetRow);
+                }
+                else
+                {
+                    JInt cellsPastEdge = targetRow - maxJ();
+                    markVisited(targetCol, targetRow - cellsPastEdge);
+                }
+            }
+            
+            if (currentCell.getCol()!=maxI()&&currentCell.getRow()!=maxJ()) {// move to upper-right if possible
+                JInt targetCol = currentCell.getCol() + radius;
+                JInt targetRow = currentCell.getRow() + radius;
+                if (targetCol<=maxI()&&targetRow<=maxJ()) {
+                    markVisited(targetCol, targetRow);
+                }
+                else
+                {
+                    JInt cellsPastEdge = max(targetCol - maxI() , targetRow - maxJ());
+                    markVisited(targetCol-cellsPastEdge, targetRow-cellsPastEdge);
+                }
+            }
+            if (currentCell.getCol()!=minI()) {// move left if possible
+                JInt targetCol = currentCell.getCol() - radius;
+                JInt targetRow = currentCell.getRow();
+                if (targetCol >= minI()) {
+                    markVisited(targetCol, targetRow);
+                }
+                else
+                {
+                    JInt cellsPastEdge = minI() - targetCol;
+                    markVisited(targetCol+cellsPastEdge, targetRow);
+                }
+            }
+            
+            if (currentCell.getCol()!= maxI()) {// move right if possible
+                JInt targetCol = currentCell.getCol() + radius;
+                JInt targetRow = currentCell.getRow();
+                if (targetCol<=maxI()) {
+                    markVisited(targetCol, targetRow);
+                }
+                else
+                {
+                    JInt cellsPastEdge = targetCol - maxI();
+                    markVisited(targetCol - cellsPastEdge, targetRow);
+                }
+            }
+            
+            if (currentCell.getCol()!=minI() && currentCell.getRow()!=minJ()) { // move to lower-left if possible
+                JInt targetCol = currentCell.getCol() - radius;
+                JInt targetRow = currentCell.getRow() - radius;
+                if (targetCol>=minI() && targetRow>=minJ()) {
+                    markVisited(targetCol, targetRow);
+                }
+                else
+                {
+                    JInt cellsPastEdge = max(minI() - targetCol, minJ() - targetRow);
+                    markVisited(targetCol+cellsPastEdge,targetRow+cellsPastEdge);
+                }
+            }
+            
+            if (currentCell.getRow()!=minJ()) {// move down if possible
+                JInt targetCol = currentCell.getCol();
+                JInt targetRow = currentCell.getRow() - radius;
+                if (targetRow>=minJ()) {
+                    markVisited(targetCol, targetRow);
+                }
+                else
+                {
+                    JInt cellsPastEdge = minJ() - targetRow;
+                    markVisited(targetCol, targetRow+cellsPastEdge);
+                }
+            }
+            
+            if (currentCell.getCol()!=maxI() && currentCell.getRow() != minJ()) {// move to lower-right if possible
+                JInt targetCol = currentCell.getCol() + radius;
+                JInt targetRow = currentCell.getRow() - radius;
+                if (targetCol<=maxI() && targetRow>=minJ()) {
+                    markVisited(targetCol, targetRow);
+                }
+                else
+                {
+                    JInt cellsPastEdge = max(targetCol-maxI(), minJ() - targetRow);
+                    markVisited(targetCol-cellsPastEdge, targetRow+cellsPastEdge);
+                }
+            }
+        }
+    }
     
 }
 
 void SearchWindow::expandWindow(JInt radius)
 {
-    
+    if (radius>0) {
+        expandSearchWindow(1);
+        expandSearchWindow(radius - 1);
+    }
 }
 
 void SearchWindow::markVisited(JInt col, JInt row)
