@@ -9,6 +9,26 @@
 #ifndef __FastDTW_x__ColMajorCell__
 #define __FastDTW_x__ColMajorCell__
 
-#include <iostream>
+#include "Foundation.h"
 
+FD_NS_START
+
+class ColMajorCell
+{
+    JInt _col;
+    JInt _row;
+    
+public:
+    ColMajorCell(JInt col, JInt row);
+    
+    JInt getCol() const;
+    
+    JInt getRow() const;
+    
+    bool operator== (ColMajorCell const& cell) const;
+    
+    bool operator< (ColMajorCell const& cell) const;
+};
+
+FD_NS_END
 #endif /* defined(__FastDTW_x__ColMajorCell__) */

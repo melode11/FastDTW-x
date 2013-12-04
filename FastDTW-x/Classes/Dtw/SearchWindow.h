@@ -12,6 +12,8 @@
 #include "Foundation.h"
 #include <vector>
 #include <algorithm>
+#include "ColMajorCell.h"
+
 FD_NS_START
 class SearchWindow;
 
@@ -27,8 +29,8 @@ protected:
     SearchWindowIterator(SearchWindow* w);
     ~SearchWindowIterator();
 public:
-    bool hasNext();
-    
+    JBool hasNext();
+    ColMajorCell next();
 };
 
 using namespace std;
@@ -46,7 +48,7 @@ public:
     
     virtual ~SearchWindow();
     
-    bool isInWindow(JInt i,JInt j) const;
+    JBool isInWindow(JInt i,JInt j) const;
     
     JInt minI() const;
     
@@ -55,6 +57,8 @@ public:
     JInt minJForI(JInt i) const;
 
     JInt maxJForI(JInt i) const;
+    
+    JInt minJ() const;
     
     JInt maxJ() const;
     

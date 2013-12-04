@@ -7,3 +7,31 @@
 //
 
 #include "ColMajorCell.h"
+FD_NS_START
+
+ColMajorCell::ColMajorCell(JInt col, JInt row):_col(col),_row(row)
+{
+    
+}
+
+JInt ColMajorCell::getCol() const
+{
+    return _col;
+}
+
+JInt ColMajorCell::getRow() const
+{
+    return _row;
+}
+
+bool ColMajorCell::operator== (ColMajorCell const& cell) const
+{
+    return _col == cell.getCol()&&_row == cell.getRow();
+}
+
+bool ColMajorCell::operator< (ColMajorCell const& cell) const
+{
+    return (getCol()*1024 + getRow()) < (cell.getCol()*1024 + cell.getRow());
+}
+
+FD_NS_END

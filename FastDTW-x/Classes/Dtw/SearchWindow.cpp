@@ -7,8 +7,37 @@
 //
 
 #include "SearchWindow.h"
+#include "Assert.h"
 
 FD_NS_START
+
+SearchWindowIterator::SearchWindowIterator(SearchWindow* w):_window(w),_hasMoreElements(w->size()>0),_currentI(w->minI()),_currentJ(w->minJ())
+{
+    
+}
+
+JBool SearchWindowIterator::hasNext()
+{
+    return _hasMoreElements;
+}
+
+ColMajorCell SearchWindowIterator::next()
+{
+    FDASSERT0(_window->getModCount() == _expectedModCount, "ConcurrentModificationException");
+    FDASSERT0(_hasMoreElements, "NoSuchElementException");
+    ColMajorCell cell(_currentI,_currentJ);
+    if(++_currentJ > _window->maxJForI(_currentI))
+    {
+        if (++_currentI<=_window->maxI()) {
+            _currentJ = _window->minJForI(_currentI);
+        }
+        else
+        {
+            _hasMoreElements = false;
+        }
+    }
+    return cell;
+}
 
 SearchWindow::SearchWindow(JInt tsIsize, JInt tsJsize):_minValues(tsIsize),_maxValues(tsIsize),_maxJ(tsJsize -1),_size(0),_modCount(0)
 {
@@ -21,7 +50,7 @@ SearchWindow::~SearchWindow()
     
 }
 
-bool SearchWindow::isInWindow(JInt i, JInt j) const
+JBool SearchWindow::isInWindow(JInt i, JInt j) const
 {
     return (i>=minI())&&(i<=maxI())&&(_minValues[i]<=j)&&(_maxValues[i]>=j);
 }
@@ -34,6 +63,11 @@ JInt SearchWindow::minI() const
 JInt SearchWindow::maxI() const
 {
     return _minValues.size() - 1;
+}
+
+JInt SearchWindow::minJ() const
+{
+    return 0;
 }
 
 JInt SearchWindow::maxJ() const
