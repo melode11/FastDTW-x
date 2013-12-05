@@ -25,28 +25,37 @@ private:
     static const JBool DEFAULT_IS_TIME_1ST_COL = true;
     static const JChar DEFAULT_DELIMITER = ',';
     static const JBool DEFAULT_IS_LABELED = true;
+   
+   
+protected:
+    vector<string> _labels;
+    vector<JDouble> _timeReadings;
+    vector<TimeSeriesPoint<ValueType>> _tsArray;
     
+    void setMaxCapacity(JInt capacity)
+    {
+        _timeReadings.reserve(capacity);
+        _tsArray.reserve(capacity);
+    }
 public:
-    vector<string> labels;
-    vector<JDouble> timeReadings;
-    vector<TimeSeriesPoint<ValueType>> tsArray;
+
     
-    TimeSeries():labels(),timeReadings(),tsArray()
+    TimeSeries():_labels(),_timeReadings(),_tsArray()
     {
         
     }
     
-    TimeSeries(JInt numOfDimensions):labels(numOfDimensions+1),timeReadings(),tsArray()
+    TimeSeries(JInt numOfDimensions):_labels(numOfDimensions+1),_timeReadings(),_tsArray()
     {
-        labels.push_back(string("time"));
+        _labels.push_back(string("time"));
         char buf[8];
         for (JInt i = 0; i<numOfDimensions; ++i) {
             snprintf(buf, 8, "%d",i);
-            labels.push_back(string(buf));
+            _labels.push_back(string(buf));
         }
     }
     
-    TimeSeries(TimeSeries& timeseries):labels(timeseries.lables),timeReadings(timeseries.timeReadings),tsArray(timeseries.tsArray)
+    TimeSeries(TimeSeries& timeseries):_labels(timeseries.lables),_timeReadings(timeseries._timeReadings),_tsArray(timeseries._tsArray)
     {
         
     }
@@ -55,14 +64,14 @@ public:
     
     void clear()
     {
-        labels.clear();
-        timeReadings.clear();
-        tsArray.clear();
+        _labels.clear();
+        _timeReadings.clear();
+        _tsArray.clear();
     }
     
     JInt size() const
     {
-        return timeReadings.size();
+        return _timeReadings.size();
     }
     
     JInt numOfPts() const
@@ -72,74 +81,84 @@ public:
     
     JInt numOfDimensions() const
     {
-        return labels.size() - 1;//potential bug when use default constructor
+        return _labels.size() - 1;//potential bug when use default constructor
     }
     
     JDouble getTimeAtNthPoint(JInt n) const
     {
-        return timeReadings[n];
+        return _timeReadings[n];
     }
     
     string& getLabel(JInt n) const
     {
-        return labels[n];
+        return _labels[n];
     }
+//    
+//    JInt getLabelsArr(string* strArr,JInt maxNum)
+//    {
+//        JInt len = maxNum>_labels.size()?_labels.size():maxNum;
+//        memcpy(strArr, _labels.data(), len*sizeof(string));
+//        return len;
+//    }
     
-    JInt getLabelsArr(string* strArr,JInt maxNum)
+    void setLabels(const vector<string>& lbs)
     {
-        JInt len = maxNum>labels.size()?labels.size():maxNum;
-        memcpy(strArr, labels.data(), len*sizeof(string));
-        return len;
-    }
-    
-    void setLabels(const vector<string> lbs)
-    {
-        labels = lbs;
+        _labels = lbs;
     }
     
     void setLabels(const string* strArr,JInt num)
     {
-        labels.clear();
-        labels.reserve(num);
-        copy(strArr, strArr+num, labels.begin());
+        _labels.clear();
+        _labels.reserve(num);
+        copy(strArr, strArr+num, _labels.begin());
+    }
+    
+    const vector<string>* getLabels()
+    {
+        return &_labels;
     }
     
     ValueType getMeasurement(JInt pointIndex, string& valueLabel) const
     {
-        JInt idx = find(labels.begin(), labels.end(), valueLabel) - labels.begin();
+        JInt idx = find(_labels.begin(), _labels.end(), valueLabel) - _labels.begin();
         FDASSERT(idx>0, "ERROR:  the label %s was not one of labels",valueLabel.data());
-        return tsArray[pointIndex].get(idx - 1);
+        return _tsArray[pointIndex].get(idx - 1);
     }
     
     ValueType getMeasurement(JInt pointIndex, JInt valueIndex) const
     {
-        return tsArray[pointIndex].get(valueIndex);
+        return _tsArray[pointIndex].get(valueIndex);
     }
     
     JInt getMeasurementVector(JInt pointIndex, ValueType* buf, JInt maxNum) const
     {
-        return tsArray[pointIndex].toArray(buf,maxNum);
+        return _tsArray[pointIndex].toArray(buf,maxNum);
+    }
+    
+    const vector<ValueType>* getMeasurementVector(JInt pointIndex) const
+    {
+        return _tsArray[pointIndex].toArray();
     }
     
     void setMeasurement(JInt pointIndex,JInt valueIndex,ValueType value)
     {
-        tsArray[pointIndex].set(valueIndex,value);
+        _tsArray[pointIndex].set(valueIndex,value);
     }
     
     void addFirst(JDouble time, TimeSeriesPoint<ValueType> const& values)
     {
-        FDASSERT(values.size()+1 == labels.size(), "ERROR:  The TimeSeriesPoint contains the wrong number of values. expected:%d,found:%d",labels.size()-1,values.size());
-        FDASSERT0(time<timeReadings[0], "ERROR:  The point being inserted into the beginning of the time series does not have the correct time sequence.");
-        timeReadings.insert(timeReadings.begin(), time);
-        tsArray.insert(timeReadings.begin(),values);
+        FDASSERT(values.size()+1 == _labels.size(), "ERROR:  The TimeSeriesPoint contains the wrong number of values. expected:%d,found:%d",_labels.size()-1,values.size());
+        FDASSERT0(time<_timeReadings[0], "ERROR:  The point being inserted into the beginning of the time series does not have the correct time sequence.");
+        _timeReadings.insert(_timeReadings.begin(), time);
+        _tsArray.insert(_timeReadings.begin(),values);
     }
     
     void addLast(JDouble time, TimeSeriesPoint<ValueType> const& values)
     {
-        FDASSERT(values.size()+1 == labels.size(), "ERROR:  The TimeSeriesPoint contains the wrong number of values. expected:%d,found:%d",labels.size()-1,values.size());
-        FDASSERT0(timeReadings.size()==0 || time>timeReadings[timeReadings.size() - 1], "ERROR:  The point being inserted into the beginning of the time series does not have the correct time sequence.");
-        timeReadings.push_back(time);
-        tsArray.push_back(values);
+        FDASSERT(values.size()+1 == _labels.size(), "ERROR:  The TimeSeriesPoint contains the wrong number of values. expected:%d,found:%d",_labels.size()-1,values.size());
+        FDASSERT0(_timeReadings.size()==0 || time>_timeReadings[_timeReadings.size() - 1], "ERROR:  The point being inserted into the beginning of the time series does not have the correct time sequence.");
+        _timeReadings.push_back(time);
+        _tsArray.push_back(values);
     }
 };
 

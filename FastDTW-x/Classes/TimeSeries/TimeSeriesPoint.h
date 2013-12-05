@@ -10,70 +10,70 @@
 #define __FastDTW_x__TimeSeriesPoint__
 #include "Foundation.h"
 #include <algorithm>
-
+#include <vector>
 FD_NS_START
+using namespace std;
 template <typename ValueType>
 class TimeSeriesPoint {
-    ValueType* measurements;
-    JInt numMeasurement;
-    ValueType sum;
-    bool sumValid;
+    vector<ValueType> _measurements;
+    ValueType _sum;
+    bool _sumValid;
     
 public:
-    TimeSeriesPoint(const ValueType* meas,JInt num):sumValid(false),numMeasurement(num),sum(0)
+    TimeSeriesPoint(const vector<ValueType> meas):_measurements(meas), _sumValid(false),_sum(0)
     {
-        measurements = new ValueType[num];
-        memcpy(measurements, meas, num*sizeof(ValueType));
 
     }
     
     ValueType get(JInt dimension) const
     {
-        return measurements[dimension];
+        return _measurements[dimension];
     }
     
     void set(JInt dimension,ValueType newValue)
     {
-        if(sumValid)
+        if(_sumValid)
         {
-            sum -= measurements[dimension];
-            sum += newValue;
+            _sum -= _measurements[dimension];
+            _sum += newValue;
         }
-        measurements[dimension] = newValue;
+        _measurements[dimension] = newValue;
     }
     
     JInt size() const
     {
-        return numMeasurement;
+        return _measurements.size();
     }
     
     JInt toArray(ValueType* buff,JInt maxNum) const
     {
-        JInt len = maxNum > numMeasurement? numMeasurement:maxNum;
-        memcpy(buff, measurements, len* sizeof(ValueType));
+        JInt len = maxNum > size()? size():maxNum;
+        memcpy(buff, _measurements.data(), len* sizeof(ValueType));
         return len;
+    }
+    
+    const vector<ValueType>* toArray()
+    {
+        return &_measurements;
     }
     
     ValueType getSum()
     {
-        if(!sumValid)
+        if(!_sumValid)
         {
-            sumValid = true;
+            _sumValid = true;
             ValueType tmp = 0;
-            for (JInt i = 0 ; i<numMeasurement; ++i) {
-                tmp += measurements[i];
+            for (JInt i = 0 ; i<_measurements.size(); ++i) {
+                tmp += _measurements[i];
             }
-            sum=tmp;
+            _sum=tmp;
         }
-        return sum;
+        return _sum;
     }
 
     bool operator==(const TimeSeriesPoint& p) const
     {
-        if (p.numMeasurement == numMeasurement) {
-            return std::equal(measurements, measurements+numMeasurement, p.measurements);
-        }
-        return false;
+        return _measurements == p._measurements;
     }
     
     bool operator<(TimeSeriesPoint& p)
@@ -83,9 +83,6 @@ public:
     
     ~TimeSeriesPoint()
     {
-        if (measurements) {
-             delete [] measurements;
-        }
     }
 };
 
