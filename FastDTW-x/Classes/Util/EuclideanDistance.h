@@ -14,7 +14,9 @@
 #include "Math.h"
 #include <cmath>
 
-class EuclideanDistance
+FD_NS_START
+template <typename ValueType>
+class EuclideanDistance : public DistanceFunction<ValueType>
 {
 public:
     EuclideanDistance()
@@ -22,8 +24,7 @@ public:
         
     }
     
-    template <typename ValueType>
-    ValueType calcDistance(const std::vector<ValueType>& v1, const std::vector<ValueType>& v2)
+    ValueType calcDistance(const std::vector<ValueType>& v1, const std::vector<ValueType>& v2) const
     {
         FDASSERT0(v1.size()==v2.size(),"ERROR:  cannot calculate the distance between vectors of different sizes.");
         double sqSum = 0.0;
@@ -34,5 +35,6 @@ public:
         return (ValueType)sqrt(sqSum);
     }
 };
+FD_NS_END
 
 #endif /* defined(__FastDTW_x__EuclideanDistance__) */

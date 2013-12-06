@@ -12,7 +12,9 @@
 #include "DistanceFunction.h"
 #include "Assert.h"
 #include "Math.h"
-class ManhattanDistance
+FD_NS_START
+template <typename ValueType>
+class ManhattanDistance : public DistanceFunction<ValueType>
 {
 public:
     ManhattanDistance()
@@ -20,8 +22,7 @@ public:
         
     }
     
-    template <typename ValueType>
-    ValueType calcDistance(const std::vector<ValueType>& v1, const std::vector<ValueType>& v2)
+    ValueType calcDistance(const std::vector<ValueType>& v1, const std::vector<ValueType>& v2) const
     {
         FDASSERT0(v1.size()==v2.size(),"ERROR:  cannot calculate the distance between vectors of different sizes.");
         ValueType diffSum = 0;
@@ -33,5 +34,5 @@ public:
         return diffSum;
     }
 };
-
+FD_NS_END
 #endif /* defined(__FastDTW_x__ManhattanDistance__) */

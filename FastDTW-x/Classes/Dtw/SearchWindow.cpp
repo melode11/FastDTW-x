@@ -45,9 +45,9 @@ ColMajorCell SearchWindowIterator::next()
     return cell;
 }
 
-SearchWindow::SearchWindow(JInt tsIsize, JInt tsJsize):_minValues(tsIsize),_maxValues(tsIsize),_maxJ(tsJsize -1),_size(0),_modCount(0)
+SearchWindow::SearchWindow(JInt tsIsize, JInt tsJsize):_minValues(tsIsize, -1),_maxValues(tsIsize),_maxJ(tsJsize -1),_size(0),_modCount(0)
 {
-    fill(_minValues.begin(), _minValues.end(), -1);
+//    fill(_minValues.begin(), _minValues.end(), -1);
 //    fill(_maxValues.begin(), _maxValues.end(), 0);
 }
 

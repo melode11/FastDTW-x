@@ -11,6 +11,7 @@
 #include "Foundation.h"
 #include <vector>
 FD_NS_START
+template <typename ValueType>
 class DistanceFunction
 {
 public:
@@ -19,11 +20,7 @@ public:
         
     }
     
-    template <typename FunctionType, typename ValueType>
-    static ValueType calcDistance(const FunctionType &func,const std::vector<ValueType>& v1, const std::vector<ValueType>& v2)
-    {
-        return func.calcDistance(v1,v2);
-    }
+    virtual ValueType calcDistance(const std::vector<ValueType>& v1, const std::vector<ValueType>& v2) const = 0;
 };
 
 FD_NS_END

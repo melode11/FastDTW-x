@@ -12,8 +12,8 @@
 #include "DistanceFunction.h"
 #include "Assert.h"
 FD_NS_START
-
-class BinaryDistance
+template <typename ValueType>
+class BinaryDistance : public DistanceFunction<ValueType>
 {
 public:
     BinaryDistance()
@@ -21,8 +21,7 @@ public:
         
     }
     
-    template <typename ValueType>
-    ValueType calcDistance(const std::vector<ValueType>& v1, const std::vector<ValueType>& v2)
+    ValueType calcDistance(const std::vector<ValueType>& v1, const std::vector<ValueType>& v2) const
     {
         FDASSERT0(v1.size()==v2.size(),"ERROR:  cannot calculate the distance between vectors of different sizes.");
         if (v1 == v2) {
