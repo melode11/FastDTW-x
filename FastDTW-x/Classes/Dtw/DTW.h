@@ -16,6 +16,7 @@
 #include "ColMajorCell.h"
 #include "Math.h"
 #include "TimeWarpInfo.h"
+#include "SearchWindow.h"
 #include <vector>
 #include <limits>
 FD_NS_START
@@ -186,6 +187,12 @@ namespace DTW {
         }
         //Let Return Value Optimization do its job.
         return TimeWarpInfo<ValueType>(minimumCost, minCostPath);
+    }
+    
+    template <typename  ValueType>
+    ValueType getWarpDistBetween(TimeSeries<ValueType> const& tsI,TimeSeries<ValueType> const& tsJ,SearchWindow const& window, DistanceFunction<ValueType> const& distFn)
+    {
+        
     }
 }
 
