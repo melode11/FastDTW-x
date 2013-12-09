@@ -17,6 +17,7 @@
 #include "Math.h"
 #include "TimeWarpInfo.h"
 #include "SearchWindow.h"
+#include "PartialWindowMatrix.h"
 #include <vector>
 #include <limits>
 FD_NS_START
@@ -192,8 +193,51 @@ namespace DTW {
     template <typename  ValueType>
     ValueType getWarpDistBetween(TimeSeries<ValueType> const& tsI,TimeSeries<ValueType> const& tsJ,SearchWindow const& window, DistanceFunction<ValueType> const& distFn)
     {
-        
+        //     COST MATRIX:
+        //   5|_|_|_|_|_|_|E| E = min Global Cost
+        //   4|_|_|_|_|_|_|_| S = Start point
+        //   3|_|_|_|_|_|_|_| each cell = min global cost to get to that point
+        // j 2|_|_|_|_|_|_|_|
+        //   1|_|_|_|_|_|_|_|
+        //   0|S|_|_|_|_|_|_|
+        //     0 1 2 3 4 5 6
+        //            i
+        //   access is M(i,j)... column-row
+        PartialWindowMatrix<ValueType> costMatrix(window);
+        JInt maxI = tsI.size()-1;
+        JInt maxJ = tsI.size() -1;
+        // Get an iterator that traverses the window cells in the order that the cost matrix is filled.
+        //    (first to last row (1..maxI), bottom to top (1..MaxJ)
+        SearchWindowIterator matrixIterator = window.iterator();
+        while (matrixIterator.hasNext()) {
+            ColMajorCell currentCell = matrixIterator.next();
+            JInt i = currentCell.getCol();
+            JInt j = currentCell.getRow();
+            if (i == 0 && j==0) { // bottom left cell (first row AND first column)
+                costMatrix.put(i,j,distFn.calcDistance(tsI.getMeasurementVector(0),tsJ.getMeasurementVector(0)));
+            }
+            else if (i == 0)             // first column
+            {
+                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(0), tsJ.getMeasurementVector(j)) +
+                               costMatrix.get(i, j-1));
+            }
+            else if (j == 0)             // first row
+            {
+                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(i), tsJ.getMeasurementVector(0)) +
+                               costMatrix.get(i-1, j));
+            }
+            else                         // not first column or first row
+            {
+                ValueType minGlobalCost = min(costMatrix.get(i-1, j),
+                                                      min(costMatrix.get(i-1, j-1),
+                                                               costMatrix.get(i, j-1)));
+                costMatrix.put(i, j, minGlobalCost + distFn.calcDistance(tsI.getMeasurementVector(i),
+                                                                         tsJ.getMeasurementVector(j)));
+            }
+        }
+        return costMatrix.get(maxI,maxJ);
     }
+    
 }
 
 FD_NS_END

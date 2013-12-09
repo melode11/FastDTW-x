@@ -12,7 +12,7 @@
 
 FD_NS_START
 
-SearchWindowIterator::SearchWindowIterator(const SearchWindow* w):_window(w),_hasMoreElements(w->size()>0),_currentI(w->minI()),_currentJ(w->minJ())
+SearchWindowIterator::SearchWindowIterator(const SearchWindow* w):_window(w),_hasMoreElements(w->size()>0),_currentI(w->minI()),_currentJ(w->minJ()),_expectedModCount(w->getModCount())
 {
     
 }
@@ -22,7 +22,7 @@ SearchWindowIterator::~SearchWindowIterator()
     
 }
 
-JBool SearchWindowIterator::hasNext()
+JBool SearchWindowIterator::hasNext() const
 {
     return _hasMoreElements;
 }

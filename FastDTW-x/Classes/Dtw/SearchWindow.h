@@ -27,9 +27,9 @@ class SearchWindowIterator
     
 protected:
     SearchWindowIterator(const SearchWindow* w);
-    ~SearchWindowIterator();
 public:
-    JBool hasNext();
+    ~SearchWindowIterator();
+    JBool hasNext() const;
     ColMajorCell next();
     
     friend class SearchWindow;
