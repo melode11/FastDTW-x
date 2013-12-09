@@ -13,6 +13,20 @@
 #include <vector>
 FD_NS_START
 using namespace std;
+
+//Add Traits for further optimize;
+template <typename ValueType, JInt dimension>
+struct PointTraits
+{
+    typedef vector<ValueType> point_type;
+};
+
+template <typename ValueType>
+struct PointTraits<ValueType,1>
+{
+    typedef ValueType point_type;
+};
+
 template <typename ValueType>
 class TimeSeriesPoint {
     vector<ValueType> _measurements;
