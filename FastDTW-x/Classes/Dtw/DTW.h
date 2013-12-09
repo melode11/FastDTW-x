@@ -18,6 +18,7 @@
 #include "TimeWarpInfo.h"
 #include "SearchWindow.h"
 #include "PartialWindowMatrix.h"
+#include "MemoryResidentMatrix.h"
 #include <vector>
 #include <limits>
 FD_NS_START
@@ -238,6 +239,107 @@ namespace DTW {
         return costMatrix.get(maxI,maxJ);
     }
     
+    template <typename ValueType>
+    TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType> const& tsI, TimeSeries<ValueType> const& tsJ,SearchWindow const& window, DistanceFunction<ValueType> const& distFn)
+    {
+        //     COST MATRIX:
+        //   5|_|_|_|_|_|_|E| E = min Global Cost
+        //   4|_|_|_|_|_|_|_| S = Start point
+        //   3|_|_|_|_|_|_|_| each cell = min global cost to get to that point
+        // j 2|_|_|_|_|_|_|_|
+        //   1|_|_|_|_|_|_|_|
+        //   0|S|_|_|_|_|_|_|
+        //     0 1 2 3 4 5 6
+        //            i
+        //   access is M(i,j)... column-row
+        MemoryResidentMatrix<ValueType> costMatrix(window);
+        JInt maxI = tsI.size()-1;
+        JInt maxJ = tsJ.size()-1;
+        
+        // Get an iterator that traverses the window cells in the order that the cost matrix is filled.
+        //    (first to last row (1..maxI), bottom to top (1..MaxJ)
+        SearchWindowIterator matrixIterator = window.iterator();
+        
+        while (matrixIterator.hasNext())
+        {
+            ColMajorCell currentCell = matrixIterator.next();  // current cell being filled
+            JInt i = currentCell.getCol();
+            JInt j = currentCell.getRow();
+            
+            if ( (i==0) && (j==0) )      // bottom left cell (first row AND first column)
+                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(0), tsJ.getMeasurementVector(0)));
+            else if (i == 0)             // first column
+            {
+                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(0), tsJ.getMeasurementVector(j)) +
+                               costMatrix.get(i, j-1));
+            }
+            else if (j == 0)             // first row
+            {
+                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(i), tsJ.getMeasurementVector(0)) +
+                               costMatrix.get(i-1, j));
+            }
+            else                         // not first column or first row
+            {
+                ValueType minGlobalCost = min(costMatrix.get(i-1, j),
+                                                      min(costMatrix.get(i-1, j-1),
+                                                               costMatrix.get(i, j-1)));
+                costMatrix.put(i, j, minGlobalCost + distFn.calcDistance(tsI.getMeasurementVector(i),
+                                                                         tsJ.getMeasurementVector(j)));
+            }
+        }
+        
+        // Minimum Cost is at (maxI, maxJ)
+        ValueType minimumCost = costMatrix.get(maxI, maxJ);
+        
+        WarpPath minCostPath(maxI+maxJ-1);
+        JInt i = maxI;
+        JInt j = maxJ;
+        minCostPath.addFirst(i, j);
+        while ((i>0) || (j>0))
+        {
+            // Find the costs of moving in all three possible directions (left,
+            //    down, and diagonal (down and left at the same time).
+            ValueType diagCost;
+            ValueType leftCost;
+            ValueType downCost;
+            
+            if ((i>0) && (j>0))
+                diagCost = costMatrix.get(i-1, j-1);
+            else
+                diagCost = numeric_limits<ValueType>::max();
+            
+            if (i > 0)
+                leftCost = costMatrix.get(i-1, j);
+            else
+                leftCost = numeric_limits<ValueType>::max();
+            
+            if (j > 0)
+                downCost = costMatrix.get(i, j-1);
+            else
+                downCost = numeric_limits<ValueType>::max();
+            
+            // Determine which direction to move in.  Prefer moving diagonally and
+            //    moving towards the i==j axis of the matrix if there are ties.
+            if ((diagCost<=leftCost) && (diagCost<=downCost))
+            {
+                i--;
+                j--;
+            }
+            else if ((leftCost<diagCost) && (leftCost<downCost))
+                i--;
+            else if ((downCost<diagCost) && (downCost<leftCost))
+                j--;
+            else if (i <= j)  // leftCost==rightCost > diagCost
+                j--;
+            else   // leftCost==rightCost > diagCost
+                i--;
+            
+            // Add the current step to the warp path.
+            minCostPath.addFirst(i, j);
+        }
+        
+        return TimeWarpInfo<ValueType>(minimumCost, minCostPath);
+    }
 }
 
 FD_NS_END
