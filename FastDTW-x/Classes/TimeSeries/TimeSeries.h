@@ -45,17 +45,17 @@ public:
         
     }
     
-    TimeSeries(JInt numOfDimensions):_labels(numOfDimensions+1),_timeReadings(),_tsArray()
+    TimeSeries(JInt numOfDimensions):_labels(),_timeReadings(),_tsArray()
     {
         _labels.push_back(string("time"));
         char buf[8];
         for (JInt i = 0; i<numOfDimensions; ++i) {
-            snprintf(buf, 8, "%d",i);
+            snprintf(buf, 8, "%ld",i);
             _labels.push_back(string(buf));
         }
     }
     
-    TimeSeries(TimeSeries& timeseries):_labels(timeseries.lables),_timeReadings(timeseries._timeReadings),_tsArray(timeseries._tsArray)
+    TimeSeries(TimeSeries& timeseries):_labels(timeseries._labels),_timeReadings(timeseries._timeReadings),_tsArray(timeseries._tsArray)
     {
         
     }
@@ -155,7 +155,7 @@ public:
     
     void addLast(JDouble time, TimeSeriesPoint<ValueType> const& values)
     {
-        FDASSERT(values.size()+1 == _labels.size(), "ERROR:  The TimeSeriesPoint contains the wrong number of values. expected:%d,found:%d",_labels.size()-1,values.size());
+        FDASSERT(values.size()+1 == _labels.size(), "ERROR:  The TimeSeriesPoint contains the wrong number of values. expected:%ld,found:%ld",_labels.size()-1,values.size());
         FDASSERT0(_timeReadings.size()==0 || time>_timeReadings[_timeReadings.size() - 1], "ERROR:  The point being inserted into the beginning of the time series does not have the correct time sequence.");
         _timeReadings.push_back(time);
         _tsArray.push_back(values);

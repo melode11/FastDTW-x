@@ -39,6 +39,14 @@ public:
 
     }
     
+    TimeSeriesPoint(const ValueType* meas, JInt nDimensions):_measurements(), _sumValid(false),_sum(0)
+    {
+        _measurements.reserve(nDimensions);
+        for (JInt i =0; i<nDimensions; ++i) {
+            _measurements.push_back(meas[i]);
+        }
+    }
+    
     ValueType get(JInt dimension) const
     {
         return _measurements[dimension];
@@ -66,7 +74,7 @@ public:
         return len;
     }
     
-    const vector<ValueType>* toArray()
+    const vector<ValueType>* toArray() const
     {
         return &_measurements;
     }

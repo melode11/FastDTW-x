@@ -11,9 +11,9 @@
 #include <cassert>
 
 #define FDASSERT0(__assertion__,__msg__) \
-do {if(!__assertion__){printf(__msg__);assert(false);}}while(0)
+do {if(!(__assertion__)){printf(__msg__);assert(false);}}while(0)
 
 #define FDASSERT(__assertion__,__msg__,...) \
-do {if(!__assertion__){printf(__msg__,__VA_ARGS__);assert(false);}}while(0)
+do {if(!(__assertion__)){printf(__msg__,__VA_ARGS__);assert(false);}}while(0)
 
 #endif

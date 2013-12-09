@@ -80,7 +80,7 @@ namespace DTW {
     }
     
     template <typename  ValueType>
-    const TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType> const& tsI, TimeSeries<ValueType> const& tsJ, DistanceFunction<ValueType> const distFn)
+    const TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType> const& tsI, TimeSeries<ValueType> const& tsJ, DistanceFunction<ValueType> const& distFn)
     {
         //     COST MATRIX:
         //   5|_|_|_|_|_|_|E| E = min Global Cost
@@ -100,17 +100,17 @@ namespace DTW {
         }
         JInt maxI = tsI.size() - 1;
         JInt maxJ = tsJ.size() - 1;
-        costMatrix[0][0] = distFn.calcDistance(tsI.getMeasurementVector(0),
-                                               tsJ.getMeasurementVector(0));
+        costMatrix[0][0] = distFn.calcDistance(*tsI.getMeasurementVector(0),
+                                               *tsJ.getMeasurementVector(0));
         for (int j=1; j<=maxJ; j++)
-            costMatrix[0][j] = costMatrix[0][j-1] + distFn.calcDistance(tsI.getMeasurementVector(0),
-                                                                        tsJ.getMeasurementVector(j));
+            costMatrix[0][j] = costMatrix[0][j-1] + distFn.calcDistance(*tsI.getMeasurementVector(0),
+                                                                        *tsJ.getMeasurementVector(j));
         for (int i=1; i<=maxI; i++)   // i = columns
         {
             // Calculate the value for the bottom row of the current column
             //    (i,0) = LocalCost(i,0) + GlobalCost(i-1,0)
-            costMatrix[i][0] = costMatrix[i-1][0] + distFn.calcDistance(tsI.getMeasurementVector(i),
-                                                                        tsJ.getMeasurementVector(0));
+            costMatrix[i][0] = costMatrix[i-1][0] + distFn.calcDistance(*tsI.getMeasurementVector(i),
+                                                                        *tsJ.getMeasurementVector(0));
             
             for (int j=1; j<=maxJ; j++)  // j = rows
             {
@@ -118,8 +118,8 @@ namespace DTW {
                 ValueType minGlobalCost = min(costMatrix[i-1][j],
                                                       min(costMatrix[i-1][j-1],
                                                                costMatrix[i][j-1]));
-                costMatrix[i][j] = minGlobalCost + distFn.calcDistance(tsI.getMeasurementVector(i),
-                                                                       tsJ.getMeasurementVector(j));
+                costMatrix[i][j] = minGlobalCost + distFn.calcDistance(*tsI.getMeasurementVector(i),
+                                                                       *tsJ.getMeasurementVector(j));
             }
         }
         ValueType minimumCost = costMatrix[maxI][maxJ];
