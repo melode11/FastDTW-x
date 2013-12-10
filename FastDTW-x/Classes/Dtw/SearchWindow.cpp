@@ -243,7 +243,7 @@ void SearchWindow::markVisited(JInt col, JInt row)
         _size++;
         _modCount++;
     }
-    else if(_maxValues[col]>row)
+    else if(_minValues[col]>row)
     {
         _size+=_minValues[col] - row;
         _minValues[col] = row;

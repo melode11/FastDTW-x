@@ -12,6 +12,7 @@
 #include "Foundation.h"
 #include <vector>
 #include "ColMajorCell.h"
+#include <iostream>
 
 FD_NS_START
 using namespace std;
@@ -50,6 +51,8 @@ public:
     bool operator==(const WarpPath& path) const;
     
     bool operator<(const WarpPath& path) const;
+    
+    void print(ostream& stream) const;
 
 };
 

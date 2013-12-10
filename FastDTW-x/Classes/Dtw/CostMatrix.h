@@ -20,7 +20,7 @@ public:
     
     virtual ValueType get(JInt col, JInt row) const = 0;
     
-    virtual JInt size() = 0;
+    virtual JInt size() const = 0;
 };
 
 FD_NS_END

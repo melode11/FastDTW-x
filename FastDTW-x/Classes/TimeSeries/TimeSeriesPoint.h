@@ -10,6 +10,7 @@
 #define __FastDTW_x__TimeSeriesPoint__
 #include "Foundation.h"
 #include "Assert.h"
+#include <iostream>
 #include <algorithm>
 #include <vector>
 FD_NS_START
@@ -22,6 +23,10 @@ class MeasurementVector
     vector<ValueType> value;
     
 public:
+    MeasurementVector():value(nDimension)
+    {
+    }
+    
     MeasurementVector(const ValueType* meas):value(nDimension)
     {
         copy(meas, meas+nDimension, value.begin());
@@ -56,6 +61,15 @@ public:
     {
         return value < mv.value;
     }
+    
+    void print(ostream& stream) const
+    {
+        stream<<"p(";
+        for (JInt i = 0; i<value.size(); ++i) {
+            stream << value[i] << ",";
+        }
+        stream <<")";
+    }
 };
 
 //1 dimension TimeSeriesPoint specification
@@ -65,6 +79,10 @@ class MeasurementVector<ValueType, 1> {
     ValueType value;
     
 public:
+    MeasurementVector():value(0)
+    {
+    }
+    
     MeasurementVector(const ValueType* meas):value(*meas)
     {
     }
@@ -99,6 +117,11 @@ public:
     {
         return value < mv.value;
     }
+    
+    void print(ostream& stream) const
+    {
+        stream<<"p("<<value<<")";
+    }
 };
 
 
@@ -109,6 +132,10 @@ class MeasurementVector<ValueType, 0> {
     vector<ValueType> value;
     
 public:
+    MeasurementVector():value()
+    {
+    }
+    
     MeasurementVector(const ValueType* meas):value()
     {
     }
@@ -144,6 +171,15 @@ public:
     bool operator<(const MeasurementVector<ValueType, 1>& mv) const
     {
         return value < mv.value;
+    }
+    
+    void print(ostream& stream) const
+    {
+        stream<<"p(";
+        for (JInt i = 0; i<value.size(); ++i) {
+            stream << value[i] << ",";
+        }
+        stream <<")";
     }
 };
 
@@ -193,6 +229,11 @@ public:
     
     ~TimeSeriesPoint()
     {
+    }
+    
+    void print(ostream& stream) const
+    {
+        _measurements.print(stream);
     }
 };
 

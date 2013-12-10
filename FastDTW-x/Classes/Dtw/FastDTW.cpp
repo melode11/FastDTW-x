@@ -8,7 +8,7 @@
 
 #include "FastDTW.h"
 FD_NS_START
-
-const JInt DEFAULT_SEARCH_RADIUS = 1;
-
+namespace FAST {
+    const JInt DEFAULT_SEARCH_RADIUS = 1;
+}
 FD_NS_END

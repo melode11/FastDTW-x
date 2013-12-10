@@ -22,7 +22,7 @@
 #include <limits>
 FD_NS_START
 
-namespace DTW {
+namespace STRICT {
     using namespace std;
     
     template <typename ValueType, JInt nDimension, typename DistanceFunction>
@@ -31,7 +31,7 @@ namespace DTW {
         ValueType totalCost = 0.0;
         for (JInt p =0; p<path.size(); ++p) {
             ColMajorCell currWarp = path.get(p);
-            totalCost += distFn.calcDistance(tsI.getMeasurementVector(currWarp.getCol()), tsJ.getMeasurementVector(currWarp.getRow()));
+            totalCost += distFn.calcDistance(*tsI.getMeasurementVector(currWarp.getCol()), *tsJ.getMeasurementVector(currWarp.getRow()));
         }
         return totalCost;
     }
@@ -53,9 +53,9 @@ namespace DTW {
         JInt maxI = tsI.size() - 1;
         JInt maxJ = tsJ.size() - 1;
         // Calculate the values for the first column, from the bottom up.
-        currColumn[0] = distFn.calcDistance(tsI.getMeasurementVector(0), tsJ.getMeasurementVector(0));
+        currColumn[0] = distFn.calcDistance(*tsI.getMeasurementVector(0), *tsJ.getMeasurementVector(0));
         for (JInt j = 1; j<maxJ; ++j) {
-            currColumn[j] = currColumn[j-1] + distFn.calcDistance(tsI.getMeasurementVector(0), tsJ.getMeasurementVector(j));
+            currColumn[j] = currColumn[j-1] + distFn.calcDistance(*tsI.getMeasurementVector(0), *tsJ.getMeasurementVector(j));
         }
         vector<ValueType>* lastCol = &lastColumn;
         vector<ValueType>* currCol = &currColumn;
@@ -66,13 +66,13 @@ namespace DTW {
             currCol = temp;
             // Calculate the value for the bottom row of the current column
             //    (i,0) = LocalCost(i,0) + GlobalCost(i-1,0)
-            (*currCol)[0] = (*lastCol)[0] + distFn.calcDistance(tsI.getMeasurementVector(i), tsJ.getMeasurementVector(0));
+            (*currCol)[0] = (*lastCol)[0] + distFn.calcDistance(*tsI.getMeasurementVector(i), *tsJ.getMeasurementVector(0));
             
             for (int j=1; j<=maxJ; j++)  // j = rows
             {
                 // (i,j) = LocalCost(i,j) + minGlobalCost{(i-1,j),(i-1,j-1),(i,j-1)}
                 ValueType minGlobalCost = min(*lastCol[j], min(*lastCol[j-1], *currCol[j-1]));
-                *(currCol+j) = minGlobalCost + distFn.calcDistance(tsI.getMeasurementVector(i), tsJ.getMeasurementVector(j));
+                *(currCol+j) = minGlobalCost + distFn.calcDistance(*tsI.getMeasurementVector(i), *tsJ.getMeasurementVector(j));
             }  // end for loop
         }
         return *currCol[maxJ];
@@ -157,12 +157,6 @@ namespace DTW {
             
             // Determine which direction to move in.  Prefer moving diagonally and
             //    moving towards the i==j axis of the matrix if there are ties.
-            if (diagCost<=leftCost && diagCost<=downCost) {
-                i--;
-                j--;
-            }
-            // Determine which direction to move in.  Prefer moving diagonally and
-            //    moving towards the i==j axis of the matrix if there are ties.
             if ((diagCost<=leftCost) && (diagCost<=downCost))
             {
                 i--;
@@ -214,16 +208,16 @@ namespace DTW {
             JInt i = currentCell.getCol();
             JInt j = currentCell.getRow();
             if (i == 0 && j==0) { // bottom left cell (first row AND first column)
-                costMatrix.put(i,j,distFn.calcDistance(tsI.getMeasurementVector(0),tsJ.getMeasurementVector(0)));
+                costMatrix.put(i,j,distFn.calcDistance(*tsI.getMeasurementVector(0),*tsJ.getMeasurementVector(0)));
             }
             else if (i == 0)             // first column
             {
-                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(0), tsJ.getMeasurementVector(j)) +
+                costMatrix.put(i, j, distFn.calcDistance(*tsI.getMeasurementVector(0), *tsJ.getMeasurementVector(j)) +
                                costMatrix.get(i, j-1));
             }
             else if (j == 0)             // first row
             {
-                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(i), tsJ.getMeasurementVector(0)) +
+                costMatrix.put(i, j, distFn.calcDistance(*tsI.getMeasurementVector(i), *tsJ.getMeasurementVector(0)) +
                                costMatrix.get(i-1, j));
             }
             else                         // not first column or first row
@@ -231,8 +225,8 @@ namespace DTW {
                 ValueType minGlobalCost = min(costMatrix.get(i-1, j),
                                                       min(costMatrix.get(i-1, j-1),
                                                                costMatrix.get(i, j-1)));
-                costMatrix.put(i, j, minGlobalCost + distFn.calcDistance(tsI.getMeasurementVector(i),
-                                                                         tsJ.getMeasurementVector(j)));
+                costMatrix.put(i, j, minGlobalCost + distFn.calcDistance(*tsI.getMeasurementVector(i),
+                                                                         *tsJ.getMeasurementVector(j)));
             }
         }
         return costMatrix.get(maxI,maxJ);
@@ -251,7 +245,7 @@ namespace DTW {
         //     0 1 2 3 4 5 6
         //            i
         //   access is M(i,j)... column-row
-        MemoryResidentMatrix<ValueType> costMatrix(window);
+        MemoryResidentMatrix<ValueType> costMatrix(&window);
         JInt maxI = tsI.size()-1;
         JInt maxJ = tsJ.size()-1;
         
@@ -266,15 +260,15 @@ namespace DTW {
             JInt j = currentCell.getRow();
             
             if ( (i==0) && (j==0) )      // bottom left cell (first row AND first column)
-                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(0), tsJ.getMeasurementVector(0)));
+                costMatrix.put(i, j, distFn.calcDistance(*tsI.getMeasurementVector(0), *tsJ.getMeasurementVector(0)));
             else if (i == 0)             // first column
             {
-                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(0), tsJ.getMeasurementVector(j)) +
+                costMatrix.put(i, j, distFn.calcDistance(*tsI.getMeasurementVector(0), *tsJ.getMeasurementVector(j)) +
                                costMatrix.get(i, j-1));
             }
             else if (j == 0)             // first row
             {
-                costMatrix.put(i, j, distFn.calcDistance(tsI.getMeasurementVector(i), tsJ.getMeasurementVector(0)) +
+                costMatrix.put(i, j, distFn.calcDistance(*tsI.getMeasurementVector(i), *tsJ.getMeasurementVector(0)) +
                                costMatrix.get(i-1, j));
             }
             else                         // not first column or first row
@@ -282,8 +276,8 @@ namespace DTW {
                 ValueType minGlobalCost = min(costMatrix.get(i-1, j),
                                                       min(costMatrix.get(i-1, j-1),
                                                                costMatrix.get(i, j-1)));
-                costMatrix.put(i, j, minGlobalCost + distFn.calcDistance(tsI.getMeasurementVector(i),
-                                                                         tsJ.getMeasurementVector(j)));
+                costMatrix.put(i, j, minGlobalCost + distFn.calcDistance(*tsI.getMeasurementVector(i),
+                                                                         *tsJ.getMeasurementVector(j)));
             }
         }
         

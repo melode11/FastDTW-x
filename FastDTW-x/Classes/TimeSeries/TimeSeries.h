@@ -14,6 +14,7 @@
 #include <string>
 #include "TimeSeriesPoint.h"
 #include "Assert.h"
+#include <iostream>
 
 FD_NS_START
 using namespace std;
@@ -108,7 +109,7 @@ public:
         copy(strArr, strArr+num, _labels.begin());
     }
     
-    const vector<string>* getLabels()
+    const vector<string>* getLabels() const
     {
         return &_labels;
     }
@@ -149,6 +150,22 @@ public:
         FDASSERT0(_timeReadings.size()==0 || time>_timeReadings[_timeReadings.size() - 1], "ERROR:  The point being inserted into the beginning of the time series does not have the correct time sequence.");
         _timeReadings.push_back(time);
         _tsArray.push_back(values);
+    }
+    
+    virtual void print(ostream& stream) const
+    {
+        stream<<"time readings ["<<_timeReadings.size()<<"]:";
+        for (JInt i = 0; i<_timeReadings.size(); ++i) {
+            stream<<_timeReadings[i] << ",";
+        }
+        stream<<"\n";
+        stream<<"time series ["<<_tsArray.size()<<"]:";
+        for(JInt i = 0;i<_tsArray.size();++i)
+        {
+            _tsArray[i].print(stream);
+            stream << ",";
+        }
+        stream<<"\n";
     }
 };
 

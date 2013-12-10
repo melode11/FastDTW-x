@@ -116,4 +116,12 @@ bool WarpPath::operator<(const WarpPath& path) const //For containers, so arbite
     }
 }
 
+void WarpPath::print(ostream& stream) const
+{
+    for (JInt i = 0; i<_tsIindexes.size(); ++i) {
+        stream<<"("<<_tsIindexes[i]<<"," << _tsJindexes[i] << ") ";
+    }
+    stream<<"\n";
+}
+
 FD_NS_END
