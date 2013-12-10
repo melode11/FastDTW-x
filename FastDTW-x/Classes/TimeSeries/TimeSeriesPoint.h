@@ -9,42 +9,151 @@
 #ifndef __FastDTW_x__TimeSeriesPoint__
 #define __FastDTW_x__TimeSeriesPoint__
 #include "Foundation.h"
+#include "Assert.h"
 #include <algorithm>
 #include <vector>
 FD_NS_START
 using namespace std;
 
-//Add Traits for further optimize;
-template <typename ValueType, JInt dimension>
-struct PointTraits
+//Fixed dimension TimeSeriesPoint template
+template <typename ValueType, JInt nDimension>
+class MeasurementVector
 {
-    typedef vector<ValueType> point_type;
-};
-
-template <typename ValueType>
-struct PointTraits<ValueType,1>
-{
-    typedef ValueType point_type;
-};
-
-template <typename ValueType>
-class TimeSeriesPoint {
-    vector<ValueType> _measurements;
-    ValueType _sum;
-    bool _sumValid;
+    vector<ValueType> value;
     
 public:
-    TimeSeriesPoint(const vector<ValueType> meas):_measurements(meas), _sumValid(false),_sum(0)
+    MeasurementVector(const ValueType* meas):value(nDimension)
     {
-
+        copy(meas, meas+nDimension, value.begin());
     }
     
-    TimeSeriesPoint(const ValueType* meas, JInt nDimensions):_measurements(), _sumValid(false),_sum(0)
+    void setDynamicMeasurements(const ValueType* meas, JInt nDim)
     {
-        _measurements.reserve(nDimensions);
-        for (JInt i =0; i<nDimensions; ++i) {
-            _measurements.push_back(meas[i]);
+        FDASSERT0(false, "Invalid method for dynamic TimeSeriesPoint only(set dimension template parameter to 0 to use dynamic TimeSeriesPoint).");
+    }
+    
+    JInt size() const
+    {
+        return value.size();
+    }
+    
+    ValueType operator[](JInt index) const
+    {
+        return value[index];
+    }
+    
+    ValueType& operator[](JInt index)
+    {
+        return value[index];
+    }
+    
+    bool operator==(const MeasurementVector<ValueType,nDimension>& mv) const
+    {
+        return  value == mv.value;
+    }
+    
+    bool operator<(const MeasurementVector<ValueType, nDimension>& mv) const
+    {
+        return value < mv.value;
+    }
+};
+
+//1 dimension TimeSeriesPoint specification
+template <typename ValueType>
+class MeasurementVector<ValueType, 1> {
+    
+    ValueType value;
+    
+public:
+    MeasurementVector(const ValueType* meas):value(*meas)
+    {
+    }
+    
+    void setDynamicMeasurements(const ValueType* meas, JInt nDim)
+    {
+        FDASSERT0(false, "Invalid method for dynamic TimeSeriesPoint only(set dimension template parameter to 0 to use dynamic TimeSeriesPoint).");
+    }
+    
+    JInt size() const
+    {
+        return 1;
+    }
+    
+    ValueType operator[](JInt index) const
+    {
+        return value;
+    }
+
+    
+    ValueType& operator[](JInt index)
+    {
+        return value;
+    }
+    
+    bool operator==(const MeasurementVector<ValueType,1>& mv) const
+    {
+        return  value == mv.value;
+    }
+    
+    bool operator<(const MeasurementVector<ValueType, 1>& mv) const
+    {
+        return value < mv.value;
+    }
+};
+
+
+//Dynamic dimension TimeSeriesPoint specification
+template <typename ValueType>
+class MeasurementVector<ValueType, 0> {
+    
+    vector<ValueType> value;
+    
+public:
+    MeasurementVector(const ValueType* meas):value()
+    {
+    }
+    
+    void setDynamicMeasurements(const ValueType* meas, JInt nDim)
+    {
+        value.resize(nDim);
+        for (int i = 0; i<nDim; ++i) {
+            value[i] = meas[i];
         }
+    }
+    
+    JInt size() const
+    {
+        return value.size();
+    }
+    
+    ValueType operator[](JInt index) const
+    {
+        return value[index];
+    }
+    
+    ValueType& operator[](JInt index)
+    {
+        return value[index];
+    }
+    
+    bool operator==(const MeasurementVector<ValueType,1>& mv) const
+    {
+        return  value == mv.value;
+    }
+    
+    bool operator<(const MeasurementVector<ValueType, 1>& mv) const
+    {
+        return value < mv.value;
+    }
+};
+
+template <typename ValueType,JInt nDimension>
+class TimeSeriesPoint {
+    MeasurementVector<ValueType, nDimension> _measurements;
+    
+public:
+    TimeSeriesPoint(const ValueType* meas):_measurements(meas)
+    {
     }
     
     ValueType get(JInt dimension) const
@@ -52,13 +161,13 @@ public:
         return _measurements[dimension];
     }
     
+    void setDynamicMeasurements(const ValueType* meas, JInt nDim)
+    {
+        _measurements.setDynamicMeasurements(meas,nDim);
+    }
+    
     void set(JInt dimension,ValueType newValue)
     {
-        if(_sumValid)
-        {
-            _sum -= _measurements[dimension];
-            _sum += newValue;
-        }
         _measurements[dimension] = newValue;
     }
     
@@ -67,32 +176,11 @@ public:
         return _measurements.size();
     }
     
-    JInt toArray(ValueType* buff,JInt maxNum) const
-    {
-        JInt len = maxNum > size()? size():maxNum;
-        memcpy(buff, _measurements.data(), len* sizeof(ValueType));
-        return len;
-    }
-    
-    const vector<ValueType>* toArray() const
+    const MeasurementVector<ValueType, nDimension>* toArray() const
     {
         return &_measurements;
     }
     
-    ValueType getSum()
-    {
-        if(!_sumValid)
-        {
-            _sumValid = true;
-            ValueType tmp = 0;
-            for (JInt i = 0 ; i<_measurements.size(); ++i) {
-                tmp += _measurements[i];
-            }
-            _sum=tmp;
-        }
-        return _sum;
-    }
-
     bool operator==(const TimeSeriesPoint& p) const
     {
         return _measurements == p._measurements;
@@ -100,7 +188,7 @@ public:
     
     bool operator<(TimeSeriesPoint& p)
     {
-        return getSum()< p.getSum();
+        return _measurements < p._measurements;
     }
     
     ~TimeSeriesPoint()

@@ -17,8 +17,8 @@ FD_NS_START
 class FullWindow : public SearchWindow
 {
 public:
-    template <typename ValueType>
-    FullWindow(const TimeSeries<ValueType>& tsI, const TimeSeries<ValueType>& tsJ):SearchWindow(tsI.size(),tsJ.size())
+    template <typename ValueType,  JInt nDimension>
+    FullWindow(const TimeSeries<ValueType, nDimension>& tsI, const TimeSeries<ValueType, nDimension>& tsJ):SearchWindow(tsI.size(),tsJ.size())
     {
         for (JInt i = 0; i<tsI.size(); ++i) {
             markVisited(i, minJ());

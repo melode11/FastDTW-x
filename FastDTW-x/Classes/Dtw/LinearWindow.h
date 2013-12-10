@@ -19,8 +19,8 @@ FD_NS_START
 class LinearWindow : public SearchWindow
 {
 public:
-    template <typename ValueType>
-    LinearWindow(const TimeSeries<ValueType>& tsI, const TimeSeries<ValueType>& tsJ, JInt searchRadius):SearchWindow(tsI.size(),tsJ.size())
+    template <typename ValueType,JInt nDimension>
+    LinearWindow(const TimeSeries<ValueType,nDimension>& tsI, const TimeSeries<ValueType,nDimension>& tsJ, JInt searchRadius):SearchWindow(tsI.size(),tsJ.size())
     {
         JDouble ijRatio = tsI.size()/(JDouble)tsJ.size();
         JBool isIlargest = tsI.size() >= tsJ.size();

@@ -20,27 +20,27 @@
 FD_NS_START
 extern const JInt DEFAULT_SEARCH_RADIUS;
 
-template <typename ValueType>
-inline ValueType getWarpDistBetween(TimeSeries<ValueType> const& tsI,TimeSeries<ValueType> const& tsJ, DistanceFunction<ValueType> const& distFn)
+template <typename ValueType,JInt nDimension, typename DistanceFunction>
+inline ValueType getWarpDistBetween(TimeSeries<ValueType,nDimension> const& tsI,TimeSeries<ValueType,nDimension> const& tsJ, DistanceFunction const& distFn)
 {
     return getWarpInfoBetween(tsI, tsJ, DEFAULT_SEARCH_RADIUS, distFn).getDistance();
 }
 
-template <typename ValueType>
-inline TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType> const& tsI,TimeSeries<ValueType> const& tsJ,DistanceFunction<ValueType> const& distFn)
+template <typename ValueType,JInt nDimension, typename DistanceFunction>
+inline TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType,nDimension> const& tsI,TimeSeries<ValueType,nDimension> const& tsJ,DistanceFunction const& distFn)
 {
     return getWarpInfoBetween(tsI, tsJ, DEFAULT_SEARCH_RADIUS, distFn);
 }
 
-template <typename ValueType>
-inline ValueType getWarpDistBetween(TimeSeries<ValueType> const& tsI,TimeSeries<ValueType> const& tsJ,
-                                     JInt searchRadius,DistanceFunction<ValueType> const& distFn)
+template <typename ValueType,JInt nDimension, typename DistanceFunction>
+inline ValueType getWarpDistBetween(TimeSeries<ValueType,nDimension> const& tsI,TimeSeries<ValueType,nDimension> const& tsJ,
+                                     JInt searchRadius,DistanceFunction const& distFn)
 {
     return getWarpInfoBetween(tsI, tsJ, searchRadius, distFn).getDistance();
 }
 
-template <typename ValueType>
-TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType> const& tsI, TimeSeries<ValueType> const& tsJ, JInt searchRadius, DistanceFunction<ValueType> const& distFn)
+template <typename ValueType,JInt nDimension, typename DistanceFunction>
+TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType,nDimension> const& tsI, TimeSeries<ValueType,nDimension> const& tsJ, JInt searchRadius, DistanceFunction const& distFn)
 {
     if (searchRadius < 0) {
         searchRadius = 0;
@@ -52,12 +52,12 @@ TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType> const& tsI, Tim
     else
     {
         JDouble resolutionFactor = 2.0;
-        PAA<ValueType> shrunkI(tsI,(JInt)(tsI.size()/resolutionFactor));
-        PAA<ValueType> shrunkJ(tsJ,(JInt)(tsJ.size()/resolutionFactor));
+        PAA<ValueType,nDimension> shrunkI(tsI,(JInt)(tsI.size()/resolutionFactor));
+        PAA<ValueType,nDimension> shrunkJ(tsJ,(JInt)(tsJ.size()/resolutionFactor));
         // Determine the search window that constrains the area of the cost matrix that will be evaluated based on
         //    the warp path found at the previous resolution (smaller time series).
         TimeWarpInfo<ValueType> warpInfo = getWarpInfoBetween(shrunkI, shrunkJ, searchRadius, distFn);
-        ExpandedResWindow<ValueType> window(tsI, tsJ, shrunkI, shrunkJ,
+        ExpandedResWindow window(tsI, tsJ, shrunkI, shrunkJ,
                                                     *(warpInfo.getPath()),
                                                           searchRadius);
         return DTW::getWarpInfoBetween(tsI, tsJ, window, distFn);

@@ -12,7 +12,6 @@
 #include "Foundation.h"
 #include "WarpPath.h"
 #include "TimeSeries.h"
-#include "DistanceFunction.h"
 #include "ColMajorCell.h"
 #include "Math.h"
 #include "TimeWarpInfo.h"
@@ -26,8 +25,8 @@ FD_NS_START
 namespace DTW {
     using namespace std;
     
-    template <typename ValueType>
-    ValueType calcWarpCost(const WarpPath& path,const TimeSeries<ValueType>& tsI, const TimeSeries<ValueType>& tsJ, const DistanceFunction<ValueType>& distFn)
+    template <typename ValueType, JInt nDimension, typename DistanceFunction>
+    ValueType calcWarpCost(const WarpPath& path,const TimeSeries<ValueType,nDimension>& tsI, const TimeSeries<ValueType,nDimension>& tsJ, const DistanceFunction& distFn)
     {
         ValueType totalCost = 0.0;
         for (JInt p =0; p<path.size(); ++p) {
@@ -39,8 +38,8 @@ namespace DTW {
     
     // Dynamic Time Warping where the warp path is not needed, an alternate implementation can be used that does not
     //    require the entire cost matrix to be filled and only needs 2 columns to be stored at any one time.
-    template <typename ValueType>
-    ValueType getWarpDistBetween(TimeSeries<ValueType> const& tsI, TimeSeries<ValueType> const& tsJ, DistanceFunction<ValueType> const& distFn)
+    template <typename ValueType, JInt nDimension, typename DistanceFunction>
+    ValueType getWarpDistBetween(TimeSeries<ValueType, nDimension> const& tsI, TimeSeries<ValueType,nDimension> const& tsJ, DistanceFunction const& distFn)
     {
         // The space complexity is 2*tsJ.size().  Dynamic time warping is symmetric so switching the two time series
         //    parameters does not effect the final warp cost but can reduce the space complexity by allowing tsJ to
@@ -79,8 +78,8 @@ namespace DTW {
         return *currCol[maxJ];
     }
     
-    template <typename  ValueType>
-    const TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType> const& tsI, TimeSeries<ValueType> const& tsJ, DistanceFunction<ValueType> const& distFn)
+    template <typename  ValueType, JInt nDimension, typename DistanceFunction>
+    const TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType, nDimension> const& tsI, TimeSeries<ValueType, nDimension> const& tsJ, DistanceFunction const& distFn)
     {
         //     COST MATRIX:
         //   5|_|_|_|_|_|_|E| E = min Global Cost
@@ -191,8 +190,8 @@ namespace DTW {
         return TimeWarpInfo<ValueType>(minimumCost, minCostPath);
     }
     
-    template <typename  ValueType>
-    ValueType getWarpDistBetween(TimeSeries<ValueType> const& tsI,TimeSeries<ValueType> const& tsJ,SearchWindow const& window, DistanceFunction<ValueType> const& distFn)
+    template <typename  ValueType, JInt nDimension, typename DistanceFunction>
+    ValueType getWarpDistBetween(TimeSeries<ValueType,nDimension> const& tsI,TimeSeries<ValueType,nDimension> const& tsJ,SearchWindow const& window, DistanceFunction const& distFn)
     {
         //     COST MATRIX:
         //   5|_|_|_|_|_|_|E| E = min Global Cost
@@ -239,8 +238,8 @@ namespace DTW {
         return costMatrix.get(maxI,maxJ);
     }
     
-    template <typename ValueType>
-    TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType> const& tsI, TimeSeries<ValueType> const& tsJ,SearchWindow const& window, DistanceFunction<ValueType> const& distFn)
+    template <typename ValueType, JInt nDimension, typename DistanceFunction>
+    TimeWarpInfo<ValueType> getWarpInfoBetween(TimeSeries<ValueType,nDimension> const& tsI, TimeSeries<ValueType,nDimension> const& tsJ,SearchWindow const& window, DistanceFunction const& distFn)
     {
         //     COST MATRIX:
         //   5|_|_|_|_|_|_|E| E = min Global Cost

@@ -16,13 +16,13 @@
 #include "WarpPath.h"
 
 FD_NS_START
-template <typename ValueType>
 class ExpandedResWindow : public SearchWindow {
     
     
 public:
-    ExpandedResWindow(TimeSeries<ValueType> const& tsI,TimeSeries<ValueType> const& tsJ,
-                      PAA<ValueType> const& shrunkI,PAA<ValueType> const& shrunkJ,WarpPath const& shrunkWarpPath, JInt searchRadius):SearchWindow(tsI.size(),tsJ.size())
+    template <typename ValueType,JInt nDimension>
+    ExpandedResWindow(TimeSeries<ValueType,nDimension> const& tsI,TimeSeries<ValueType,nDimension> const& tsJ,
+                      PAA<ValueType,nDimension> const& shrunkI,PAA<ValueType,nDimension> const& shrunkJ,WarpPath const& shrunkWarpPath, JInt searchRadius):SearchWindow(tsI.size(),tsJ.size())
     {
         // Variables to keep track of the current location of the higher resolution projected path.
         JInt currentI = shrunkWarpPath.minI();

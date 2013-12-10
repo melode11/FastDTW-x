@@ -15,25 +15,25 @@
 #include "Assert.h"
 #include <cmath>
 FD_NS_START
-template <typename  ValueType>
-class PAA : public TimeSeries<ValueType>
+template <typename  ValueType,JInt nDimension>
+class PAA : public TimeSeries<ValueType, nDimension>
 {
     vector<JInt> _aggPtSize;
     JInt _originalLength;
 public:
     
-    PAA(const TimeSeries<ValueType>& ts, JInt shrunkSize):_originalLength(ts.size()),_aggPtSize(shrunkSize)
+    PAA(const TimeSeries<ValueType,nDimension>& ts, JInt shrunkSize):_originalLength(ts.size()),_aggPtSize(shrunkSize)
     {
         FDASSERT(shrunkSize>0 && shrunkSize <= ts.size(),"ERROR:  The size of an aggregate representation must be greater than zero and \nno larger than the original time series. (shrunkSize=%d , origSize=%d).",shrunkSize,ts.size());
         // Ensures that the data structure storing the time series will not need
         //    to be expanded more than once.  (not necessary, for optimization)
-        TimeSeries<ValueType>::setMaxCapacity(shrunkSize);
-        TimeSeries<ValueType>::setLabels(*ts.getLabels());
+        TimeSeries<ValueType,nDimension>::setMaxCapacity(shrunkSize);
+        TimeSeries<ValueType,nDimension>::setLabels(*ts.getLabels());
         JDouble reducedPtSize = ts.size()/(JDouble)shrunkSize;
         JInt ptToReadFrom(0);
         JInt ptToReadTo;
         while (ptToReadFrom < ts.size()) {
-            ptToReadTo = (JInt)round(reducedPtSize*(TimeSeries<ValueType>::size()+1)) -1;
+            ptToReadTo = (JInt)round(reducedPtSize*(TimeSeries<ValueType,nDimension>::size()+1)) -1;
             JInt ptsToRead = ptToReadTo - ptToReadFrom + 1;
             JDouble timeSum(0.0);
             vector<ValueType> measurementSums(ts.numOfDimensions());
@@ -50,8 +50,8 @@ public:
                 measurementSums[dim] = measurementSums[dim] / ptsToRead;
             }
             
-            _aggPtSize[TimeSeries<ValueType>::size()] = ptsToRead;
-            TimeSeries<ValueType>::addLast(timeSum,TimeSeriesPoint<ValueType>(measurementSums));
+            _aggPtSize[TimeSeries<ValueType,nDimension>::size()] = ptsToRead;
+            TimeSeries<ValueType,nDimension>::addLast(timeSum,TimeSeriesPoint<ValueType,nDimension>(measurementSums));
             ptToReadFrom = ptToReadTo + 1;
         }
     }

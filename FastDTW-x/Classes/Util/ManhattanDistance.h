@@ -9,12 +9,13 @@
 #ifndef __FastDTW_x__ManhattanDistance__
 #define __FastDTW_x__ManhattanDistance__
 
-#include "DistanceFunction.h"
+#include "Foundation.h"
+#include <vector>
 #include "Assert.h"
-#include "Math.h"
+#include "TimeSeriesPoint.h"
+
 FD_NS_START
-template <typename ValueType>
-class ManhattanDistance : public DistanceFunction<ValueType>
+class ManhattanDistance
 {
 public:
     ManhattanDistance()
@@ -22,6 +23,20 @@ public:
         
     }
     
+    template <typename ValueType,JInt nDimension>
+    ValueType calcDistance(const MeasurementVector<ValueType, nDimension>& v1, const MeasurementVector<ValueType, nDimension>& v2) const
+    {
+        FDASSERT0(v1.size()==v2.size(),"ERROR:  cannot calculate the distance between vectors of different sizes.");
+        ValueType diffSum = 0;
+        size_t size = v1.size();
+        for (size_t i = 0; i<size; ++i)
+        {
+            diffSum += abs(v1[i] - v2[i]);
+        }
+        return diffSum;
+    }
+    
+    template <typename ValueType>
     ValueType calcDistance(const std::vector<ValueType>& v1, const std::vector<ValueType>& v2) const
     {
         FDASSERT0(v1.size()==v2.size(),"ERROR:  cannot calculate the distance between vectors of different sizes.");

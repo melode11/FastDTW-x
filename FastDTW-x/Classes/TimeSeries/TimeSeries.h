@@ -17,7 +17,7 @@
 
 FD_NS_START
 using namespace std;
-template <typename ValueType>
+template <typename ValueType, JInt nDimension>
 class TimeSeries
 {
 private:
@@ -30,7 +30,7 @@ private:
 protected:
     vector<string> _labels;
     vector<JDouble> _timeReadings;
-    vector<TimeSeriesPoint<ValueType>> _tsArray;
+    vector<TimeSeriesPoint<ValueType,nDimension>> _tsArray;
     
     void setMaxCapacity(JInt capacity)
     {
@@ -42,14 +42,9 @@ public:
     
     TimeSeries():_labels(),_timeReadings(),_tsArray()
     {
-        
-    }
-    
-    TimeSeries(JInt numOfDimensions):_labels(),_timeReadings(),_tsArray()
-    {
         _labels.push_back(string("time"));
         char buf[8];
-        for (JInt i = 0; i<numOfDimensions; ++i) {
+        for (JInt i = 0; i<nDimension; ++i) {
             snprintf(buf, 8, "%ld",i);
             _labels.push_back(string(buf));
         }
@@ -59,7 +54,7 @@ public:
     {
         
     }
-    
+        
     //ignored file io interfaces
     
     void clear()
@@ -130,12 +125,7 @@ public:
         return _tsArray[pointIndex].get(valueIndex);
     }
     
-    JInt getMeasurementVector(JInt pointIndex, ValueType* buf, JInt maxNum) const
-    {
-        return _tsArray[pointIndex].toArray(buf,maxNum);
-    }
-    
-    const vector<ValueType>* getMeasurementVector(JInt pointIndex) const
+    const MeasurementVector<ValueType, nDimension>* getMeasurementVector(JInt pointIndex) const
     {
         return _tsArray[pointIndex].toArray();
     }
@@ -145,15 +135,15 @@ public:
         _tsArray[pointIndex].set(valueIndex,value);
     }
     
-    void addFirst(JDouble time, TimeSeriesPoint<ValueType> const& values)
+    void addFirst(JDouble time, TimeSeriesPoint<ValueType,nDimension> const& values)
     {
-        FDASSERT(values.size()+1 == _labels.size(), "ERROR:  The TimeSeriesPoint contains the wrong number of values. expected:%d,found:%d",_labels.size()-1,values.size());
+        FDASSERT(values.size()+1 == _labels.size(), "ERROR:  The TimeSeriesPoint contains the wrong number of values. expected:%ld,found:%ld",_labels.size()-1,values.size());
         FDASSERT0(time<_timeReadings[0], "ERROR:  The point being inserted into the beginning of the time series does not have the correct time sequence.");
         _timeReadings.insert(_timeReadings.begin(), time);
-        _tsArray.insert(_timeReadings.begin(),values);
+        _tsArray.insert(_tsArray.begin(),values);
     }
     
-    void addLast(JDouble time, TimeSeriesPoint<ValueType> const& values)
+    void addLast(JDouble time, TimeSeriesPoint<ValueType,nDimension> const& values)
     {
         FDASSERT(values.size()+1 == _labels.size(), "ERROR:  The TimeSeriesPoint contains the wrong number of values. expected:%ld,found:%ld",_labels.size()-1,values.size());
         FDASSERT0(_timeReadings.size()==0 || time>_timeReadings[_timeReadings.size() - 1], "ERROR:  The point being inserted into the beginning of the time series does not have the correct time sequence.");

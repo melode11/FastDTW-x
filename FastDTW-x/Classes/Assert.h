@@ -9,6 +9,7 @@
 #ifndef FastDTW_x_Assert_h
 #define FastDTW_x_Assert_h
 #include <cassert>
+#include <stdio.h>
 
 #define FDASSERT0(__assertion__,__msg__) \
 do {if(!(__assertion__)){printf(__msg__);assert(false);}}while(0)
