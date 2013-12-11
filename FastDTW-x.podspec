@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name         = "FastDTW-x"
-  s.version      = "0.2.0"
+  s.version      = "0.3.0"
   s.summary      = "C++ porting of Stan Salvador's FastDTW."
   s.homepage     = "https://github.com/melode11/FastDTW-x"
   s.license      = {:type => 'MIT'}
   s.author       = {"Melo Yao" => "melode11@gmail.com" }
-  s.source       = {:git => "https://github.com/melode11/FastDTW-x.git", :tag => "0.2.0" }
+  s.source       = {:git => "https://github.com/melode11/FastDTW-x.git", :tag => "0.3.0" }
   s.source_files = 'FastDTW-x/Classes/*.h'
   s.requires_arc = false
   
