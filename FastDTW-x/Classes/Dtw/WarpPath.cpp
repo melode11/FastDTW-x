@@ -59,7 +59,7 @@ void WarpPath::addLast(JInt i, JInt j)
 void WarpPath::getMatchingIndexesForI(JInt i,vector<JInt>& outVec) const
 {
     //find first time i appears
-    vector<const JInt>::iterator it = find(_tsIindexes.begin(), _tsIindexes.end(), i);
+    vector<JInt>::const_iterator it = find(_tsIindexes.begin(), _tsIindexes.end(), i);
     //find continuous indices of i.
     while (it != _tsIindexes.end() && *it == i)
     {
@@ -70,7 +70,7 @@ void WarpPath::getMatchingIndexesForI(JInt i,vector<JInt>& outVec) const
 
 void WarpPath::getMatchingIndexesForJ(JInt j,vector<JInt>& outVec) const
 {
-    vector<const JInt>::iterator it = find(_tsJindexes.begin(), _tsJindexes.end(), j);
+    vector<JInt>::const_iterator it = find(_tsJindexes.begin(), _tsJindexes.end(), j);
     while (it!=_tsJindexes.end() && *it == j) {
         outVec.push_back(_tsIindexes[it-_tsJindexes.begin()]);
         ++it;
