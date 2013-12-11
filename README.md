@@ -9,7 +9,7 @@ pod 'FastDTW-x'
 Other platform,Import all source files in Classes folder.
 
 Sample code:
-{
+
     \#include "DTW.h"
     \#include "FastDTW.h"
     \#include "EuclideanDistance.h"
@@ -56,4 +56,4 @@ Sample code:
         printf("Warp Distance by DTW:%lf\n",info.getDistance());
         info.getPath()->print(std::cout);
     }
-}
+
