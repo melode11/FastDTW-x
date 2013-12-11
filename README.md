@@ -9,10 +9,10 @@ pod 'FastDTW-x'
 Other platform,Import all source files in Classes folder.
 
 Sample code:
-#include "DTW.h"
-#include "FastDTW.h"
-#include "EuclideanDistance.h"
-#include <iostream>
+\#include "DTW.h"
+\#include "FastDTW.h"
+\#include "EuclideanDistance.h"
+\#include \<iostream\>
 
 using namespace fastdtw;
 
