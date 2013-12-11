@@ -13,7 +13,7 @@
 #include "SearchWindow.h"
 #include "TimeSeries.h"
 #include <cmath>
-#include "Math.h"
+#include "FDMath.h"
 
 FD_NS_START
 class LinearWindow : public SearchWindow

@@ -12,7 +12,7 @@
 #include "Foundation.h"
 #include <vector>
 #include "TimeSeries.h"
-#include "Assert.h"
+#include "FDAssert.h"
 #include <cmath>
 FD_NS_START
 template <typename  ValueType,JInt nDimension>

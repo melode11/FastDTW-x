@@ -14,7 +14,7 @@
 #include <limits>
 #include "CostMatrix.h"
 #include "SearchWindow.h"
-#include "Assert.h"
+#include "FDAssert.h"
 
 using namespace std;
 FD_NS_START

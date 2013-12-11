@@ -13,7 +13,7 @@
 #include <vector>
 #include <string>
 #include "TimeSeriesPoint.h"
-#include "Assert.h"
+#include "FDAssert.h"
 #include <iostream>
 
 FD_NS_START

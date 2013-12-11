@@ -9,7 +9,7 @@
 #ifndef __FastDTW_x__TimeSeriesPoint__
 #define __FastDTW_x__TimeSeriesPoint__
 #include "Foundation.h"
-#include "Assert.h"
+#include "FDAssert.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>

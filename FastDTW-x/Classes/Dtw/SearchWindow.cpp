@@ -7,8 +7,8 @@
 //
 
 #include "SearchWindow.h"
-#include "Assert.h"
-#include "Math.h"
+#include "FDAssert.h"
+#include "FDMath.h"
 
 FD_NS_START
 

@@ -11,7 +11,7 @@
 
 #include "CostMatrix.h"
 #include "SearchWindow.h"
-#include "Assert.h"
+#include "FDAssert.h"
 #include <vector>
 #include <limits>
 FD_NS_START

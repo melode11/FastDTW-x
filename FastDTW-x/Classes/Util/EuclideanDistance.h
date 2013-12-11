@@ -9,8 +9,8 @@
 #ifndef __FastDTW_x__EuclideanDistance__
 #define __FastDTW_x__EuclideanDistance__
 
-#include "Assert.h"
-#include "Math.h"
+#include "FDAssert.h"
+#include "FDMath.h"
 #include <cmath>
 #include "TimeSeriesPoint.h"
 

@@ -13,7 +13,7 @@
 #include "WarpPath.h"
 #include "TimeSeries.h"
 #include "ColMajorCell.h"
-#include "Math.h"
+#include "FDMath.h"
 #include "TimeWarpInfo.h"
 #include "SearchWindow.h"
 #include "PartialWindowMatrix.h"
