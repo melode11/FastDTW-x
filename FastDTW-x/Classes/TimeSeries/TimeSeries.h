@@ -60,7 +60,6 @@ public:
     
     void clear()
     {
-        _labels.clear();
         _timeReadings.clear();
         _tsArray.clear();
     }
