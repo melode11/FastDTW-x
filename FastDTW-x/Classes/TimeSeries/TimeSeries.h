@@ -31,7 +31,7 @@ private:
 protected:
     vector<string> _labels;
     vector<JDouble> _timeReadings;
-    vector<TimeSeriesPoint<ValueType,nDimension>> _tsArray;
+    vector<TimeSeriesPoint<ValueType,nDimension> > _tsArray;
     
     void setMaxCapacity(JInt capacity)
     {

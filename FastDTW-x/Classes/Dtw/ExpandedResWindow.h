@@ -14,6 +14,7 @@
 #include "SearchWindow.h"
 #include "PAA.h"
 #include "WarpPath.h"
+#include <limits>
 
 FD_NS_START
 class ExpandedResWindow : public SearchWindow {

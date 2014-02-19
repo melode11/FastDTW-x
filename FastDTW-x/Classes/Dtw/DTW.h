@@ -91,7 +91,7 @@ namespace STRICT {
         //     0 1 2 3 4 5 6
         //            i
         //   access is M(i,j)... column-row
-        vector<vector<ValueType>> costMatrix;
+        vector<vector<ValueType> > costMatrix;
         costMatrix.reserve(tsI.size());
         JInt jSize = tsJ.size();
         for (JInt i = 0; i<tsI.size(); ++i) {
