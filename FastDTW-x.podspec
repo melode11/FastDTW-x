@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "FastDTW-x"
-  s.version      = "1.0.0"
+  s.version      = "1.1.0"
   s.summary      = "C++ porting of Stan Salvador's FastDTW."
   s.homepage     = "https://github.com/melode11/FastDTW-x"
   s.license      = {:type => 'MIT'}
