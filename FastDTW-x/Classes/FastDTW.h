@@ -31,7 +31,7 @@ namespace FAST {
         }
         JInt minTSsize = searchRadius + 2;
         if (tsI.size() <= minTSsize || tsJ.size()<=minTSsize) {
-            return STRICT::getWarpInfoBetween(tsI, tsJ, distFn);
+            return STRI::getWarpInfoBetween(tsI, tsJ, distFn);
         }
         else
         {
@@ -44,7 +44,7 @@ namespace FAST {
             ExpandedResWindow window(tsI, tsJ, shrunkI, shrunkJ,
                                      *(warpInfo.getPath()),
                                      searchRadius);
-            return STRICT::getWarpInfoBetween(tsI, tsJ, window, distFn);
+            return STRI::getWarpInfoBetween(tsI, tsJ, window, distFn);
         }
         
     }

@@ -26,7 +26,7 @@ public:
         JBool isIlargest = tsI.size() >= tsJ.size();
         for (JInt i = 0; i<tsI.size(); ++i) {
             if (isIlargest) {
-                JInt j = min((JInt)round(i/ijRatio) , tsJ.size() - 1);
+                JInt j = fd_min((JInt)round(i/ijRatio) , tsJ.size() - 1);
                 markVisited(i, j);
             }
             else

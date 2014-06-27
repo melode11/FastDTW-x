@@ -128,7 +128,7 @@ void SearchWindow::expandSearchWindow(JInt radius)
                 }
                 else
                 {
-                    JInt cellsPastEdge = max(minI() - targetCol, targetRow - maxJ());
+                    JInt cellsPastEdge = fd_max(minI() - targetCol, targetRow - maxJ());
                     markVisited(targetCol+cellsPastEdge, targetRow - cellsPastEdge);
                 }
             }
@@ -154,7 +154,7 @@ void SearchWindow::expandSearchWindow(JInt radius)
                 }
                 else
                 {
-                    JInt cellsPastEdge = max(targetCol - maxI() , targetRow - maxJ());
+                    JInt cellsPastEdge = fd_max(targetCol - maxI() , targetRow - maxJ());
                     markVisited(targetCol-cellsPastEdge, targetRow-cellsPastEdge);
                 }
             }
@@ -192,7 +192,7 @@ void SearchWindow::expandSearchWindow(JInt radius)
                 }
                 else
                 {
-                    JInt cellsPastEdge = max(minI() - targetCol, minJ() - targetRow);
+                    JInt cellsPastEdge = fd_max(minI() - targetCol, minJ() - targetRow);
                     markVisited(targetCol+cellsPastEdge,targetRow+cellsPastEdge);
                 }
             }
@@ -218,7 +218,7 @@ void SearchWindow::expandSearchWindow(JInt radius)
                 }
                 else
                 {
-                    JInt cellsPastEdge = max(targetCol-maxI(), minJ() - targetRow);
+                    JInt cellsPastEdge = fd_max(targetCol-maxI(), minJ() - targetRow);
                     markVisited(targetCol-cellsPastEdge, targetRow+cellsPastEdge);
                 }
             }

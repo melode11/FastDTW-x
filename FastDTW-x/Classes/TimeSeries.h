@@ -15,6 +15,8 @@
 #include "TimeSeriesPoint.h"
 #include "FDAssert.h"
 #include <iostream>
+#include <cstdio>
+#include <sstream>
 
 FD_NS_START
 using namespace std;
@@ -44,10 +46,12 @@ public:
     TimeSeries():_labels(),_timeReadings(),_tsArray()
     {
         _labels.push_back(string("time"));
-        char buf[8];
+        stringstream ss;
+
         for (JInt i = 0; i<nDimension; ++i) {
-            snprintf(buf, 8, "%ld",i);
-            _labels.push_back(string(buf));
+			ss.clear();
+            ss << i;
+			_labels.push_back(ss.str());
         }
     }
     

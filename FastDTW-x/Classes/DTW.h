@@ -22,7 +22,7 @@
 #include <limits>
 FD_NS_START
 
-namespace STRICT {
+namespace STRI {
     using namespace std;
     
     template <typename ValueType, JInt nDimension, typename DistanceFunction>
@@ -71,7 +71,7 @@ namespace STRICT {
             for (int j=1; j<=maxJ; j++)  // j = rows
             {
                 // (i,j) = LocalCost(i,j) + minGlobalCost{(i-1,j),(i-1,j-1),(i,j-1)}
-                ValueType minGlobalCost = min(lastCol->at(j), min(lastCol->at(j-1), currCol->at(j-1)));
+                ValueType minGlobalCost = fd_min(lastCol->at(j), fd_min(lastCol->at(j-1), currCol->at(j-1)));
                 (*currCol)[j] = minGlobalCost + distFn.calcDistance(*tsI.getMeasurementVector(i), *tsJ.getMeasurementVector(j));
             }  // end for loop
         }
@@ -114,8 +114,8 @@ namespace STRICT {
             for (int j=1; j<=maxJ; j++)  // j = rows
             {
                 // (i,j) = LocalCost(i,j) + minGlobalCost{(i-1,j),(i-1,j-1),(i,j-1)}
-                ValueType minGlobalCost = min(costMatrix[i-1][j],
-                                              min(costMatrix[i-1][j-1],
+                ValueType minGlobalCost = fd_min(costMatrix[i-1][j],
+                                              fd_min(costMatrix[i-1][j-1],
                                                   costMatrix[i][j-1]));
                 costMatrix[i][j] = minGlobalCost + distFn.calcDistance(*tsI.getMeasurementVector(i),
                                                                        *tsJ.getMeasurementVector(j));
@@ -222,8 +222,8 @@ namespace STRICT {
             }
             else                         // not first column or first row
             {
-                ValueType minGlobalCost = min(costMatrix.get(i-1, j),
-                                              min(costMatrix.get(i-1, j-1),
+                ValueType minGlobalCost = fd_min(costMatrix.get(i-1, j),
+                                              fd_min(costMatrix.get(i-1, j-1),
                                                   costMatrix.get(i, j-1)));
                 costMatrix.put(i, j, minGlobalCost + distFn.calcDistance(*tsI.getMeasurementVector(i),
                                                                          *tsJ.getMeasurementVector(j)));
@@ -273,8 +273,8 @@ namespace STRICT {
             }
             else                         // not first column or first row
             {
-                ValueType minGlobalCost = min(costMatrix.get(i-1, j),
-                                              min(costMatrix.get(i-1, j-1),
+                ValueType minGlobalCost = fd_min(costMatrix.get(i-1, j),
+                                              fd_min(costMatrix.get(i-1, j-1),
                                                   costMatrix.get(i, j-1)));
                 costMatrix.put(i, j, minGlobalCost + distFn.calcDistance(*tsI.getMeasurementVector(i),
                                                                          *tsJ.getMeasurementVector(j)));
