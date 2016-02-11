@@ -4,7 +4,7 @@ FastDTW-x
 C++ porting of Stan Salvador's FastDTW
 
 Usage:
-iOS,use Cocoapods,add line in podfile:
+iOS,use CocoaPods,add line in podfile:
 pod 'FastDTW-x'
 Other platform,Import all source files in Classes folder.
 
