@@ -34,7 +34,7 @@ Sample code:
             tsJ.addLast(i, TimeSeriesPoint<double,1>(sample2+i));
         }
     
-        TimeWarpInfo<double> info =  STRICT::getWarpInfoBetween(tsI,tsJ,EuclideanDistance());
+        TimeWarpInfo<double> info =  STRI::getWarpInfoBetween(tsI,tsJ,EuclideanDistance());
         printf("Warp Distance by DTW:%lf\n",info.getDistance());
         info.getPath()->print(std::cout);
     }
